@@ -45,8 +45,7 @@ export class ClientesController {
     }
 
     @Put(':id/addRutina/:day')
-    async setRutina ( @Param('id') id: string, @Param('day') day : string , @Body(new ValidationPipe()) rutina: rutinasDTO ) {
-        console.log(rutina)
+    async setRutina ( @Param('id') id: string, @Param('day') day : string , @Body() rutina: any ) {
         return this.clientesService.setRutina( id, day , rutina);
     }
 
@@ -58,6 +57,11 @@ export class ClientesController {
     @Get(':id')
     async findOne( @Param('id') id: string ){
         return this.clientesService.findOneClient(id);
+    }
+
+    @Get('cuenta/:id')
+    async findOneByCuenta( @Param('id') id: string ){
+        return this.clientesService.findOneClientByCuenta(id);
     }
 
     @Delete(':id')

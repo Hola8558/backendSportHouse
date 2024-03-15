@@ -6,6 +6,7 @@ import { Ejercicio } from './schemas/ejercicios.schema';
 import { EjercicioUpdateDto } from './dtos/ejercicios-update.dto';
 import { RutinaDto } from './dtos/rutina.dto';
 import { Rutina } from './schemas/rutinas.schema';
+import { rutinasDTO } from 'src/clientes/dtos/update-client.dto';
 
 @Injectable()
 export class rutinasService {
@@ -39,10 +40,10 @@ export class rutinasService {
 
     /** RUTINAS */
 
-    async createRutina(rutina : RutinaDto){
-        const createdRutina = new this.rutinaModel(rutina);
-        createdRutina.save()
-    }
+    async createRutina(rutina: any): Promise<string> {
+        const savedRutina = await this.rutinaModel.create(rutina);
+        return savedRutina._id.toString();
+      }
 
     async findAllRutinas(){
         return this.rutinaModel.find().exec();
@@ -50,6 +51,11 @@ export class rutinasService {
 
     async findOneRutina(id:string){
         return this.rutinaModel.findById(id).exec();
+    }
+
+    async deleteRutina ( id : string ){
+        console.log(id)
+        return this.rutinaModel.findByIdAndDelete(id).exec();
     }
 
 }

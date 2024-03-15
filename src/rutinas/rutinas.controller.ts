@@ -42,8 +42,7 @@ export class rutinasController {
 
     /** RUTINAS  */
     @Post('/createRutina')
-    async crearRutina(  @Body(new ValidationPipe()) rutina: RutinaDto ){
-        console.log(rutina)
+    async crearRutina(  @Body() rutina: any ){
         return this.rutinasService.createRutina(rutina);
     }
 
@@ -55,6 +54,12 @@ export class rutinasController {
     @Get('/rutinasUna/:id')
     async findOneRutina( @Param('id') id: string ){
         return this.rutinasService.findOneRutina(id);
+    }
+
+    @Delete('/deleteRutina/:id')
+    async deleteRutina ( @Param('id') id: string ){
+        console.log(id)
+        return this.rutinasService.deleteRutina(id);
     }
 
 }

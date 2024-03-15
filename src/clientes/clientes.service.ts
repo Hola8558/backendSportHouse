@@ -45,9 +45,11 @@ export class ClientesService {
     }
 
     async findOneClient( id: string ){
-        console.log(id);
-        
         return this.clientModel.findById(id).exec();
+    }
+
+    async findOneClientByCuenta( ncuenta: string ){
+        return this.clientModel.findOne({ ncuenta }).exec();
     }
 
     async deleteClient ( id : string ){
@@ -60,7 +62,7 @@ export class ClientesService {
         if (e.rutinas){
             //rutinas = e.rutinas as { l: string; M: string; Mi: string; J: string; V: string; S: string } || { l: "", M: "", Mi: "", J: "", V: "", S: "" };
             rutinas = { ...rutinas, ...e.rutinas };
-        }
+        }        
         if (d === 'Lunes'){ rutinas.l = rutina.rutina }
         if (d === 'Martes'){ rutinas.M = rutina.rutina }
         if (d === 'Miercoles'){ rutinas.Mi = rutina.rutina }
@@ -70,7 +72,7 @@ export class ClientesService {
         if (e){
             e.set({ rutinas: rutinas });
             // Guarda los cambios en la base de datos
-            return await e.save()
+            return await e.save();
         }
     }
 
