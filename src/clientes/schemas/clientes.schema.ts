@@ -24,6 +24,8 @@ export class Client {
     numeroCelularEmergencia: string;
     @Prop({type: String})
     profileImg: string;
+    @Prop({type: String})
+    gender ?: string;
 
 }
 

@@ -21,6 +21,8 @@ export class ClientesController {
 
     @Post()
     async crearCliente( @Body( new ValidationPipe() ) createdClient: CreateClientDto ){
+        console.log(createdClient);
+        
         return this.clientesService.createClient(createdClient);
     }
 

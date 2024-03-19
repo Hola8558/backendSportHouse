@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class RutinaDto {
     @IsNotEmpty()
@@ -9,4 +9,20 @@ export class RutinaDto {
     grupoMuscular:string;
     @IsNotEmpty()
     ejercicios: [];
+    @IsNumber()
+    favorites:number;
+}
+
+export class rutinaUpdateDto {
+    @IsOptional()
+    @IsString()
+    name: string;
+    @IsString()
+    @IsOptional()
+    grupoMuscular:string;
+    @IsOptional()
+    ejercicios: [];
+    @IsNumber()
+    @IsOptional()
+    favorites:number;
 }

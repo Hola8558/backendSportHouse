@@ -29,6 +29,9 @@ export class UpdateClientDto {
     @IsOptional()
     @IsString()
     numeroCelularEmergencia?: string;
+    @IsOptional()
+    @IsString()
+    gender ?: string;
 
 }
 

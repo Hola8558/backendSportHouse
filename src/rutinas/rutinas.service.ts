@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { EjercicioDto } from "./dtos/ejercicios.dto";
 import { Ejercicio } from './schemas/ejercicios.schema';
 import { EjercicioUpdateDto } from './dtos/ejercicios-update.dto';
-import { RutinaDto } from './dtos/rutina.dto';
+import { RutinaDto, rutinaUpdateDto } from './dtos/rutina.dto';
 import { Rutina } from './schemas/rutinas.schema';
 import { rutinasDTO } from 'src/clientes/dtos/update-client.dto';
 
@@ -46,7 +46,13 @@ export class rutinasService {
       }
 
     async findAllRutinas(){
-        return this.rutinaModel.find().exec();
+        const rutinas = await this.rutinaModel.find({ favorites: 0 }).exec();
+        return rutinas;
+    }
+
+    async getAllRutinasStarred(){
+        const rutinas = await this.rutinaModel.find({ favorites: 1 }).exec();
+        return rutinas;
     }
 
     async findOneRutina(id:string){
@@ -54,8 +60,13 @@ export class rutinasService {
     }
 
     async deleteRutina ( id : string ){
-        console.log(id)
         return this.rutinaModel.findByIdAndDelete(id).exec();
+    }
+
+    async updateRutina ( id : string , rutina: rutinaUpdateDto ){
+        return this.rutinaModel.findByIdAndUpdate( id, rutina, {
+            new: true,
+        }).exec();
     }
 
 }

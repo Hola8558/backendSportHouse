@@ -29,4 +29,7 @@ export class CreateClientDto {
     @IsOptional()
     @IsString()
     numeroCelularEmergencia?: string;
+    @IsOptional()
+    @IsString()
+    gender ?: string;
 }

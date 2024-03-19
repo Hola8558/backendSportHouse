@@ -8,6 +8,8 @@ export class Rutina {
     grupoMuscular: string;
     @Prop({required:true})
     ejercicios: [];
+    @Prop({default : 0})
+    favorites:number;
 
 }
 
