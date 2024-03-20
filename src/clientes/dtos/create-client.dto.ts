@@ -32,4 +32,7 @@ export class CreateClientDto {
     @IsOptional()
     @IsString()
     gender ?: string;
+    @IsOptional()
+    @IsString()
+    pass ?: string;
 }

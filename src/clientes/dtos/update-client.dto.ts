@@ -32,6 +32,9 @@ export class UpdateClientDto {
     @IsOptional()
     @IsString()
     gender ?: string;
+    @IsOptional()
+    @IsString()
+    pass ?: string;
 
 }
 

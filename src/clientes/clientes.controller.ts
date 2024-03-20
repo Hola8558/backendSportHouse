@@ -7,6 +7,7 @@ import { UpdateClientDto, rutinasDTO } from './dtos/update-client.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, renameImage } from './images.helper';
+import { LoginUserDto } from './dtos/login-user.dto';
 
 @Controller('clientes')
 export class ClientesController {
@@ -15,8 +16,8 @@ export class ClientesController {
     ){}
 
     @Post('loginSocio')
-    async loginSocio ( @Body( new ValidationPipe() ) loginUser : { email : string } ){
-        return this.clientesService.loginSocio(loginUser.email);
+    async loginSocio ( @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
+        return this.clientesService.loginSocio(loginUser);
     }
 
     @Post()

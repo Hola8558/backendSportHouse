@@ -26,6 +26,8 @@ export class Client {
     profileImg: string;
     @Prop({type: String})
     gender ?: string;
+    @Prop({type: String})
+    pass ?: string;
 
 }
 

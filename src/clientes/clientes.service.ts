@@ -6,6 +6,8 @@ import { CreateClientDto } from "./dtos/create-client.dto";
 import { UpdateClientDto } from "./dtos/update-client.dto";
 import { ImagesDto } from "./dtos/image-profile.dto";
 import * as jwt from 'jsonwebtoken';
+import { hash, compare } from 'bcrypt';
+import { LoginUserDto } from "./dtos/login-user.dto";
 
 @Injectable()
 export class ClientesService {
@@ -14,6 +16,9 @@ export class ClientesService {
     ){}
 
     async createClient ( client : CreateClientDto ){
+        const { pass } = client;
+        const plainToHash = await hash( pass, 10 );
+        client = { ...client, pass:plainToHash };
         const createdClient = new this.clientModel(client);
         createdClient.save();
     }
@@ -35,6 +40,9 @@ export class ClientesService {
     }
 
     async updateClient ( id : string, client : UpdateClientDto ){
+        const { pass } = client;
+        const plainToHash = await hash( pass, 10 );
+        client = { ...client, pass:plainToHash };
         return this.clientModel.findByIdAndUpdate( id, client, {
             new: true,
         }).exec();
@@ -91,11 +99,14 @@ export class ClientesService {
        // if (d === 'Sabado'){ return rutinas.S }
     }
 
-    async loginSocio ( ncuenta : string ) {
-        const finUser = await this.clientModel.findOne({ncuenta});
+    async loginSocio ( socio : LoginUserDto ) {
+        const { email, contrasena } = socio;
+        const finUser = await this.clientModel.findOne({ncuenta: email});
         if ( !finUser ) throw new HttpException('Socio_no_encontrado', 404);
 
-        if (this.fechaYaPaso(finUser.fechaVencimiento) === true) throw new HttpException('Usuario_vencido', 404);
+        if (this.fechaYaPaso(finUser.fechaVencimiento) === true) throw new HttpException('Usuario_vencido', 403);
+        const checkPass = await compare(contrasena, finUser.pass);
+        if (!checkPass) throw new HttpException('Contraseña_incorrecta', 403);
 //
         const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
         //// Retorna un objeto que incluye la data del usuario y el token
