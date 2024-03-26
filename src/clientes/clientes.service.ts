@@ -41,8 +41,10 @@ export class ClientesService {
 
     async updateClient ( id : string, client : UpdateClientDto ){
         const { pass } = client;
-        const plainToHash = await hash( pass, 10 );
-        client = { ...client, pass:plainToHash };
+        if (pass){
+            const plainToHash = await hash( pass, 10 );
+            client = { ...client, pass:plainToHash };
+        }
         return this.clientModel.findByIdAndUpdate( id, client, {
             new: true,
         }).exec();

@@ -44,6 +44,7 @@ export class ClientesController {
 
     @Put(':id')
     async update ( @Param('id') id: string, @Body( new ValidationPipe() ) client: UpdateClientDto ) {
+        console.log(client)
         return this.clientesService.updateClient( id, client) 
     }
 
