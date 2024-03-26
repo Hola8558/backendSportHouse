@@ -69,4 +69,16 @@ export class rutinasService {
         }).exec();
     }
 
+    async updateRutinaEjercicios ( id : string , ejercicios: any ){
+        console.log(id);
+        console.log(ejercicios);
+        const updateData = {
+            $set: { ejercicios: ejercicios } // Aquí se especifica el campo 'ejercicios' que se actualizará
+        };
+        return this.rutinaModel.findByIdAndUpdate(id, updateData, {
+            new: true,
+        }).exec();
+    
+    }
+
 }
