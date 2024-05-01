@@ -5,10 +5,25 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ClientesModule } from './clientes/clientes.module';
 import { RutinasModule } from './rutinas/rutinas.module';
+import { env } from 'process';
+import { ConfigModule } from '@nestjs/config';
+import { enviroments } from './enviroments';
+import config  from './config';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb+srv://cristopher29092005:0xsWYRsCq9D8c8Ed@cluster0.axtmvr7.mongodb.net/mc-fitness-gym?retryWrites=true&w=majority'),
+    ConfigModule.forRoot({
+      envFilePath:enviroments[process.env.NODE_ENV] || '.env',
+      load:[config],
+      isGlobal:true,
+      validationSchema:Joi.object({
+        USER: Joi.string().required(),
+        PASS: Joi.string().required(),
+        CONECTION: Joi.string().required()
+      })
+    }),
+    MongooseModule.forRoot(`mongodb+srv://${env.USER}:${env.PASS}@cluster0.axtmvr7.mongodb.net/${env.CONECTION}`),
     UsuariosModule,
     ClientesModule,
     RutinasModule

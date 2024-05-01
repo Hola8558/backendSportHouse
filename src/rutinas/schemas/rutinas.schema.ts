@@ -10,6 +10,8 @@ export class Rutina {
     ejercicios: [];
     @Prop({default : 0})
     favorites:number;
+    @Prop({ required : false })
+    peso?:number;
 
 }
 

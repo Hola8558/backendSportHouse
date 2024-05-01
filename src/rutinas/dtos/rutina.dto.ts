@@ -11,6 +11,9 @@ export class RutinaDto {
     ejercicios: [];
     @IsNumber()
     favorites:number;
+    @IsNumber()
+    @IsOptional()
+    peso?:number;
 }
 
 export class rutinaUpdateDto {
@@ -25,4 +28,7 @@ export class rutinaUpdateDto {
     @IsNumber()
     @IsOptional()
     favorites:number;
+    @IsNumber()
+    @IsOptional()
+    peso?:number;
 }

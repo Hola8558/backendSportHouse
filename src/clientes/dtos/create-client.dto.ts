@@ -35,4 +35,10 @@ export class CreateClientDto {
     @IsOptional()
     @IsString()
     pass ?: string;
+    @IsOptional()
+    @IsNumber()
+    peso ?: number;
+    @IsOptional()
+    @IsString()
+    enfermedades ?: string;
 }

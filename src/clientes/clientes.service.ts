@@ -12,7 +12,7 @@ import { LoginUserDto } from "./dtos/login-user.dto";
 @Injectable()
 export class ClientesService {
     constructor(
-        @InjectModel(Client.name)private clientModel: Model<Client>
+        @InjectModel(Client.name) private clientModel: Model<Client>
     ){}
 
     async createClient ( client : CreateClientDto ){
@@ -51,10 +51,12 @@ export class ClientesService {
     }
 
     async findAllClients(){
-        return this.clientModel.find().exec();
+        let r = this.clientModel.find().exec();
+        return r;
     }
 
     async findOneClient( id: string ){
+        let r = this.clientModel.findById(id).exec();
         return this.clientModel.findById(id).exec();
     }
 

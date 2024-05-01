@@ -2,6 +2,8 @@ import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema()
 export class Client {
+    @Prop({required:false})
+    _id?: string;
     @Prop({required:true})
     nombre: string;
     @Prop({required:true})
@@ -28,6 +30,10 @@ export class Client {
     gender ?: string;
     @Prop({type: String})
     pass ?: string;
+    @Prop({type: Number})
+    peso ?: number;
+    @Prop({type: String})
+    enfermedades ?: string;
 
 }
 

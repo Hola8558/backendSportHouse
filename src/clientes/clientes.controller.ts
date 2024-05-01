@@ -59,7 +59,7 @@ export class ClientesController {
     }
 
     @Get(':id')
-    async findOne( @Param('id') id: string ){
+    async findOne( @Param('id') id: string ){        
         return this.clientesService.findOneClient(id);
     }
 
