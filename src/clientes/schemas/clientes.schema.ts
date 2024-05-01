@@ -2,8 +2,6 @@ import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema()
 export class Client {
-    @Prop({required:false})
-    _id?: string;
     @Prop({required:true})
     nombre: string;
     @Prop({required:true})

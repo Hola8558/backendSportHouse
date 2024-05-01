@@ -14,6 +14,16 @@ export class RutinaDto {
     @IsNumber()
     @IsOptional()
     peso?:number;
+
+    @IsNumber()
+    @IsOptional()
+    conc?:number;
+    @IsNumber()
+    @IsOptional()
+    iso?:number;
+    @IsNumber()
+    @IsOptional()
+    exc?:number;
 }
 
 export class rutinaUpdateDto {
@@ -31,4 +41,14 @@ export class rutinaUpdateDto {
     @IsNumber()
     @IsOptional()
     peso?:number;
+
+    @IsNumber()
+    @IsOptional()
+    conc?:number;
+    @IsNumber()
+    @IsOptional()
+    iso?:number;
+    @IsNumber()
+    @IsOptional()
+    exc?:number;
 }

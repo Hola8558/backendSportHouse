@@ -59,12 +59,12 @@ export class rutinasController {
     }
 
     @Get('/rutinasUna/:id')
-    async findOneRutina( @Param('id') id: string ){
+    async findOneRutina( @Param('id') id: string ){        
         return this.rutinasService.findOneRutina(id);
     }
 
     @Delete('/deleteRutina/:id')
-    async deleteRutina ( @Param('id') id: string ){
+    async deleteRutina ( @Param('id') id: string ){        
         return this.rutinasService.deleteRutina(id);
     }
 

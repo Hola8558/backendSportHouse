@@ -56,7 +56,6 @@ export class ClientesService {
     }
 
     async findOneClient( id: string ){
-        let r = this.clientModel.findById(id).exec();
         return this.clientModel.findById(id).exec();
     }
 

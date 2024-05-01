@@ -13,6 +13,13 @@ export class Rutina {
     @Prop({ required : false })
     peso?:number;
 
+    @Prop({ required : false })
+    conc?:number;
+    @Prop({ required : false })
+    iso?:number;
+    @Prop({ required : false })
+    exc?:number;
+
 }
 
 export const RutinaSchema = SchemaFactory.createForClass(Rutina);
