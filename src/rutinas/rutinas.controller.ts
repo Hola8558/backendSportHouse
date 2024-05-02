@@ -43,8 +43,6 @@ export class rutinasController {
     /** RUTINAS  */
     @Post('/createRutina')
     async crearRutina(  @Body() rutina: any ){
-        console.log(rutina);
-        
         return this.rutinasService.createRutina(rutina);
     }
 
@@ -70,6 +68,9 @@ export class rutinasController {
 
     @Put('/updateRutina/:id')
     async updateRutina (@Param('id') id: string, @Body( new ValidationPipe() ) rutina:  rutinaUpdateDto){
+        console.log(id);
+        console.log(rutina);
+        
         return this.rutinasService.updateRutina(id, rutina);
     }
 

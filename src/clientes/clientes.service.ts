@@ -69,6 +69,7 @@ export class ClientesService {
 
     async setRutina( id:string, d:string, rutina:any ){
         let e = await this.clientModel.findById(id).exec();
+        
         let rutinas : {l:string,M:string,Mi:string,J:string,V:string,S:string} = {l:'',M:'',Mi:'',J:'',V:'',S:''}
         if (e.rutinas){
             //rutinas = e.rutinas as { l: string; M: string; Mi: string; J: string; V: string; S: string } || { l: "", M: "", Mi: "", J: "", V: "", S: "" };
@@ -82,6 +83,9 @@ export class ClientesService {
         if (d === 'Sabado'){ rutinas.S = rutina.rutina }
         if (e){
             e.set({ rutinas: rutinas });
+            console.log(rutinas);
+            
+            
             // Guarda los cambios en la base de datos
             return await e.save();
         }

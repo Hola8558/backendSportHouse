@@ -22,8 +22,6 @@ export class ClientesController {
 
     @Post()
     async crearCliente( @Body( new ValidationPipe() ) createdClient: CreateClientDto ){
-        console.log(createdClient);
-        
         return this.clientesService.createClient(createdClient);
     }
 
@@ -44,7 +42,6 @@ export class ClientesController {
 
     @Put(':id')
     async update ( @Param('id') id: string, @Body( new ValidationPipe() ) client: UpdateClientDto ) {
-        console.log(client)
         return this.clientesService.updateClient( id, client) 
     }
 
@@ -60,8 +57,6 @@ export class ClientesController {
 
     @Get(':id')
     async findOne( @Param('id') id: string ){
-        console.log(id);
-        
         return this.clientesService.findOneClient(id);
     }
 
