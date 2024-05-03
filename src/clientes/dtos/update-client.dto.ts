@@ -35,6 +35,12 @@ export class UpdateClientDto {
     @IsOptional()
     @IsString()
     pass ?: string;
+    @IsOptional()
+    @IsNumber()
+    peso ?: number;
+    @IsOptional()
+    @IsString()
+    enfermedades ?: string;
 
 }
 

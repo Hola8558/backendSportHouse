@@ -83,8 +83,6 @@ export class ClientesService {
         if (d === 'Sabado'){ rutinas.S = rutina.rutina }
         if (e){
             e.set({ rutinas: rutinas });
-            console.log(rutinas);
-            
             
             // Guarda los cambios en la base de datos
             return await e.save();

@@ -42,7 +42,6 @@ export class rutinasService {
 
     async createRutina(rutina: any): Promise<string> {
         const savedRutina = await this.rutinaModel.create(rutina);
-        console.log(rutina);
         return savedRutina._id.toString();
       }
 
