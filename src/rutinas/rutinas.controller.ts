@@ -1,10 +1,12 @@
-import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param, Req, Query } from '@nestjs/common';
 
 /////////////////
 import { rutinasService } from './rutinas.service';
 import { EjercicioDto } from './dtos/ejercicios.dto';
 import { EjercicioUpdateDto } from './dtos/ejercicios-update.dto';
-import { RutinaDto, rutinaUpdateDto } from './dtos/rutina.dto';
+import { rutinaUpdateDto } from './dtos/rutina.dto';
+
+import { Query as ExpressQuery } from 'express-serve-static-core'
 
 @Controller('rutinas')
 export class rutinasController {
@@ -34,6 +36,32 @@ export class rutinasController {
     async findOneEjercicio( @Param('id') id: string ){
         return this.rutinasService.findOneEjercicio(id);
     }
+
+    /* Paginator */
+
+    @Get('/ejerciciosPage')
+    async getEjerciciosByValue(@Query() req: ExpressQuery){
+        return this.rutinasService.getEjerciciosByValue(req);
+    }
+
+    @Get('/ejerciciosPageStepper')
+    async getEjerciciosByPage(){
+        return this.rutinasService.getEjerciciosByPage();
+    }
+
+    @Get('/getEjerciciosPaginados/:grupoM')
+    async getEjerciciosPaginados(@Query() req: ExpressQuery, @Param('grupoM') grupoM : string ){
+        let page = 0
+        if ( +req.page ) { page = +req.page; }
+        return this.rutinasService.getEjerciciosPaginados(grupoM, page);
+    }
+
+    @Get('/gruposMusculares')
+    async getgruposMusculares( ){
+        return this.rutinasService.getgruposMusculares( );
+    }
+
+    /* Paginator */
 
     @Delete('/ejercicio/:id')
     async deleteEjercicios ( @Param('id') id: string ){

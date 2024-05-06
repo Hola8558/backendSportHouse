@@ -6,7 +6,8 @@ import { Ejercicio } from './schemas/ejercicios.schema';
 import { EjercicioUpdateDto } from './dtos/ejercicios-update.dto';
 import { RutinaDto, rutinaUpdateDto } from './dtos/rutina.dto';
 import { Rutina } from './schemas/rutinas.schema';
-import { rutinasDTO } from 'src/clientes/dtos/update-client.dto';
+
+import { Query } from 'express-serve-static-core'
 
 @Injectable()
 export class rutinasService {
@@ -33,6 +34,61 @@ export class rutinasService {
     async findOneEjercicio( id: string ){
         return this.ejercicioModel.findById(id).exec();
     }
+
+    /* Paginator */
+    async getEjerciciosByValue(query : Query){
+        const keyword = query.keyword ? {
+            $or: [
+                {nombre: {
+                    $regex: query.keyword,
+                    $options: 'i'
+                }},
+                {grupoMuscular: {
+                    $regex: query.keyword,
+                    $options: 'i'
+                }}
+            ]
+        } : { }
+        
+        const results = await this.ejercicioModel.find( { ...keyword } );
+        return results;
+    }
+
+    async getEjerciciosByPage( ){
+        const gruposMusculares = await this.ejercicioModel.distinct('grupoMuscular');
+        const ejerciciosPaginados = [];
+        for (const grupoMuscular of gruposMusculares) {
+            const ejerciciosGrupo = await this.ejercicioModel
+                .find({ grupoMuscular })
+                .limit(6) // Obtener solo 3 ejercicios por grupo muscular
+                .exec();
+    
+            ejerciciosPaginados.push(...ejerciciosGrupo);
+        }
+
+        return ejerciciosPaginados;
+    }
+
+    async getEjerciciosPaginados(grupoMuscular: string, indicePagina: number = 0) {
+        const limitePagina = 4; // Número de ejercicios por página
+        const skip = indicePagina * limitePagina; // Calcular el número de documentos a saltar
+        
+        const query = grupoMuscular ? { grupoMuscular } : {};
+    
+        const ejerciciosPaginados = await this.ejercicioModel
+            .find(query)
+            .skip(skip) // Saltar los documentos anteriores
+            .limit(limitePagina) // Limitar el número de documentos a devolver
+            .exec();
+        
+        return ejerciciosPaginados;
+    }
+
+    async getgruposMusculares ( ) {
+        return await this.ejercicioModel.distinct('grupoMuscular');
+    }
+
+    /* Paginator */
 
     async deleteEjercicio ( id : string ){
         return this.ejercicioModel.findByIdAndDelete(id).exec();
