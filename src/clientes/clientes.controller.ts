@@ -20,6 +20,11 @@ export class ClientesController {
         return this.clientesService.loginSocio(loginUser);
     }
 
+    @Get('verificationLoginSocio/:id')
+    async verificationVencimientoSocio ( @Param('id') id : string ){
+        return this.clientesService.verificationVencimientoSocio(id);
+    }
+
     @Post()
     async crearCliente( @Body( new ValidationPipe() ) createdClient: CreateClientDto ){
         return this.clientesService.createClient(createdClient);

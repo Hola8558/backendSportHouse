@@ -118,6 +118,16 @@ export class ClientesService {
         return { userData: finUser, token };
     }
 
+    async verificationVencimientoSocio( id : string ){
+        const finUser = await this.clientModel.findOne({_id: id});
+        if ( !finUser ) throw new HttpException('Socio_no_encontrado', 404);
+
+        if (this.fechaYaPaso(finUser.fechaVencimiento) === true) throw new HttpException('Usuario_vencido', 403);
+        const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
+        //// Retorna un objeto que incluye la data del usuario y el token
+        return { userData: finUser, token };
+    }
+
     fechaYaPaso(fechaString:string) {
         // Obtener la fecha actual
         const fechaActual = new Date();
