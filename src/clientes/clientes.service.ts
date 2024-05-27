@@ -1,7 +1,8 @@
 import { HttpException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Client } from "./schemas/clientes.schema";
-import { Model } from "mongoose";
+import { FilterQuery, Model } from "mongoose";
+import { Query } from 'express-serve-static-core'
 import { CreateClientDto } from "./dtos/create-client.dto";
 import { UpdateClientDto } from "./dtos/update-client.dto";
 import { ImagesDto } from "./dtos/image-profile.dto";
@@ -50,9 +51,41 @@ export class ClientesService {
         }).exec();
     }
 
-    async findAllClients(){
-        let r = this.clientModel.find().exec();
-        return r;
+    private pageNumberClients = 15;
+
+    async findAllClients(indicePagina: number = 0, filter : Query ){
+        const limiteClientes = this.pageNumberClients;
+        const skip = indicePagina * limiteClientes;
+        const keyword = filter.filer ? {
+            $or: [
+                {ncuenta: {
+                    $regex: filter.filer,
+                    $options: 'i'
+                }},
+                {nombre: {
+                    $regex: filter.filer,
+                    $options: 'i'
+                }},
+                {apellidos: {
+                    $regex: filter.filer,
+                    $options: 'i'
+                }}
+            ]
+        } : { }
+
+        const clientesPaginados = await this.clientModel
+            .find({...keyword})
+            .skip(skip) // Saltar los documentos anteriores
+            .limit(limiteClientes) // Limitar el número de documentos a devolver
+            .exec();
+        return clientesPaginados;
+    }
+
+    async getTotalPages(filter: FilterQuery<any>): Promise<number> {
+        const totalClientes = await this.clientModel.countDocuments(filter);
+        const limiteClientes = this.pageNumberClients; // El mismo valor que usaste en la función findAllClients
+        const totalPages = Math.ceil(totalClientes / limiteClientes);
+        return totalPages;
     }
 
     async findOneClient( id: string ){

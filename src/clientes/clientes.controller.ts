@@ -1,4 +1,4 @@
-import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param, UseInterceptors, UploadedFile, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param, UseInterceptors, UploadedFile, Res, HttpStatus, Query } from '@nestjs/common';
 
 /////////////////
 import { ClientesService } from "./clientes.service";
@@ -8,6 +8,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { fileFilter, renameImage } from './images.helper';
 import { LoginUserDto } from './dtos/login-user.dto';
+
+import { Query as ExpressQuery } from 'express-serve-static-core'
+import { FilterQuery } from 'mongoose';
 
 @Controller('clientes')
 export class ClientesController {
@@ -55,12 +58,26 @@ export class ClientesController {
         return this.clientesService.setRutina( id, day , rutina);
     }
 
-    @Get()
-    async findAll(){
-        return this.clientesService.findAllClients();
+    @Get('pages/:page')
+    async findAll( @Query() req: ExpressQuery ){
+        let page = 0;
+        if ( +req.page ) { page = +req.page; };
+        return this.clientesService.findAllClients(page, req );
     }
 
-    @Get(':id')
+    @Get('getTotalPages')
+    async getTotalPages( @Query() req: ExpressQuery ){
+        const filter: FilterQuery<any> = {
+            $or: [
+                { ncuenta: { $regex: req.filer, $options: 'i' } },
+                { nombre: { $regex: req.filer, $options: 'i' } },
+                { apellidos: { $regex: req.filer, $options: 'i' } }
+            ]
+        };
+        return this.clientesService.getTotalPages(filter);
+    }
+
+    @Get('byId/:id')
     async findOne( @Param('id') id: string ){
         return this.clientesService.findOneClient(id);
     }
