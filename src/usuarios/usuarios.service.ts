@@ -67,5 +67,18 @@ export class UsuariosService {
         return { userData: finUser, token };
     }
 
+    async checkPass(nombre: string, apellidos: string, pass: any){
+        const foundUser = await this.userModel.findOne({ nombre, apellidos });
+        if (!foundUser) {
+            throw new HttpException('Socio_no_encontrado', 404);
+        }
+        const checkPass = await compare(pass.pass, foundUser.contrasena);
+        if (!checkPass) throw new HttpException('Contraseña_incorrecta', 403);
+
+        return true;
+    }
+
+    
+
     
 }

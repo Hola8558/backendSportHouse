@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { enviroments } from './enviroments';
 import config  from './config';
 import * as Joi from 'joi';
+import { OptionsModule } from './options/options.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import * as Joi from 'joi';
     MongooseModule.forRoot(`mongodb+srv://${env.USER}:${env.PASS}@cluster0.axtmvr7.mongodb.net/${env.CONECTION}`),
     UsuariosModule,
     ClientesModule,
-    RutinasModule
+    RutinasModule,
+    OptionsModule
   ],
   controllers: [AppController],
   providers: [AppService],

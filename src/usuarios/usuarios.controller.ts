@@ -44,5 +44,15 @@ export class UsuariosController {
     async login ( @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
         return this.userService.login(loginUser);
     }
+
+    @Post('checkPass/:user')
+    async checkPass(@Param('user') user : string , @Body() pass : string){
+        const userParts = decodeURIComponent(user).split(' ');
+        const nombre = userParts.slice(0, -1).join(' ');
+        const apellidos = userParts.slice(-1).join(' ');
+        return this.userService.checkPass(nombre.toString(), apellidos.toString(), pass);
+    }
+
+    
 }
 

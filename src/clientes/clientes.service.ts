@@ -33,7 +33,7 @@ export class ClientesService {
             );
       
             return updatedClient;
-        } catch (error) {
+        } catch (error:any) {
             console.error('Error al actualizar la imagen del perfil:', error.message);
             throw new HttpException("Error al actualizar imagen de perfil",401);
             return null;
@@ -170,5 +170,7 @@ export class ClientesService {
       
         // Comparar las fechas
         return fechaDada < fechaActual;
-      }
+    }
+
+    
 }
