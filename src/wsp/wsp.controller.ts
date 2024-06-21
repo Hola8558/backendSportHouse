@@ -76,7 +76,7 @@ public initializeClient = async (sessionId, res = null) => {
     client.destroy();
     this.clients.delete(sessionId);
     setTimeout(() => {
-      this.deleteDirectory(`./.wwebjs_auth/session-${sessionId}`);
+      this.deleteDirectory(`/.wwebjs_auth/session-${sessionId}`);
     }, 1000);
     for (let i = 0; i < this.clientsIds.length; i++){
       if (this.clientsIds[i] === sessionId)
@@ -158,7 +158,7 @@ public initializeClient = async (sessionId, res = null) => {
     async login( @Param('sessionId') sessionId : string ){
         console.log(`To Loggin ${sessionId}`);
 
-        const directoryPath = './.wwebjs_auth';
+        const directoryPath = '/.wwebjs_auth';
         try {
             await fsProm.access(directoryPath);
         } catch (err) {
