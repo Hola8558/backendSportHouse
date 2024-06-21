@@ -60,6 +60,8 @@ export class ClientesController {
 
     @Get('pages/:page')
     async findAll( @Query() req: ExpressQuery ){
+        console.log('ci');
+        
         let page = 0;
         if ( +req.page ) { page = +req.page; };
         return this.clientesService.findAllClients(page, req );

@@ -11,6 +11,7 @@ import { enviroments } from './enviroments';
 import config  from './config';
 import * as Joi from 'joi';
 import { OptionsModule } from './options/options.module';
+import { WspModule } from './wsp/wsp.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { OptionsModule } from './options/options.module';
     UsuariosModule,
     ClientesModule,
     RutinasModule,
-    OptionsModule
+    OptionsModule,
+    WspModule
   ],
   controllers: [AppController],
   providers: [AppService],

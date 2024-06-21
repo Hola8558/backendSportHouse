@@ -4,7 +4,7 @@ const qrcode = require('qrcode');
 const cors = require('cors');
 const multer = require('multer');
 const fs = require('fs');
-const rimraf = require('rimraf');
+const fsProm = require('fs').promises
 const path = require('path');
 const bodyParser = require('body-parser');
 
@@ -12,7 +12,6 @@ require('dotenv').config()
 
 const app = express();
 const router = express.Router();
-
 // Aumentar el límite de tamaño permitido
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -46,7 +45,7 @@ app.use('/uploads', express.static('uploads'));
 const clientsIds = [];
 const clients = new Map(); // Store multiple client instances
 const qrCallbacks = new Map(); // Store QR callbacks for each client
-const upload = multer({ storage: storage });
+//const upload = multer({ storage: storage });
 
 const initializeClient = async (sessionId, res = null) => {
   if (clients.has(sessionId)) {
@@ -131,19 +130,19 @@ const initializeClient = async (sessionId, res = null) => {
 
 async function deleteDirectory(directory) {
   try {
-      await new Promise((resolve, reject) => {
-          rimraf(directory, (err) => {
-              if (err) return reject(err);
-              resolve();
-          });
-      });
+      await fs.rm(directory, { recursive: true, force: true });
+      console.log(`Directory ${directory} removed successfully`);
+      
       console.log('Session Removed');
-  } catch (err) {
+    } catch (err) {
       console.error('Something wrong happened removing the session', err);
   }
 }
 
 router.post('/deleteAllSessions', async (req, res) => {
+  if (!fs.existsSync(`/.wwebjs_auth`)) {
+    res.status(404).send({success: false, message: "No existe ya"})
+  }
   try{
     deleteDirectory(`/.wwebjs_auth`);
     res.status(200).send({success:true});
@@ -193,10 +192,12 @@ router.get('/login/:sessionId' , async (req, res) => {
   const { sessionId }  = req.params;
   console.log(`To Loggin ${sessionId}`);
 
-  const directoryPath = '/.wwebjs_auth';
-  if (!fs.existsSync(directoryPath)) {
-    res.status(404).send({success: false, message: "No existe esta seción"})
-  }
+  const directoryPath = './.wwebjs_auth';
+  try {
+    await fsProm.access(directoryPath);
+} catch (err) {
+    return res.status(404).send({ success: false, message: "No existe esta sesión" });
+}
   
   const items = fs.readdirSync(directoryPath);
   let valid = false;
@@ -277,8 +278,6 @@ router.delete('/:sessionId', async (req, res) =>{
     res.status(500).send({msg: e.message});
   }
 })
-
-console.log("JSAKFSAJ")
 const PORT = process.env.PORTNODE;
 app.listen(PORT, () => {
   console.log(`Server live on Port ${PORT}!`);

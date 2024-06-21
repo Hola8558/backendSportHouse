@@ -54,6 +54,8 @@ export class ClientesService {
     private pageNumberClients = 15;
 
     async findAllClients(indicePagina: number = 0, filter : Query ){
+        console.log(indicePagina);
+        
         const limiteClientes = this.pageNumberClients;
         const skip = indicePagina * limiteClientes;
         const keyword = filter.filer ? {
