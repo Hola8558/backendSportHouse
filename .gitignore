@@ -4,7 +4,7 @@
 .env
 .stage.env
 /.wwebjs_auth
-/src/wsp
+
 
 # Logs
 logs
