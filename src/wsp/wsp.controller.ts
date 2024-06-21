@@ -76,7 +76,7 @@ public initializeClient = async (sessionId, res = null) => {
     client.destroy();
     this.clients.delete(sessionId);
     setTimeout(() => {
-      this.deleteDirectory(`/.wwebjs_auth/session-${sessionId}`);
+      this.deleteDirectory(`./.wwebjs_auth/session-${sessionId}`);
     }, 1000);
     for (let i = 0; i < this.clientsIds.length; i++){
       if (this.clientsIds[i] === sessionId)
@@ -130,20 +130,16 @@ public initializeClient = async (sessionId, res = null) => {
 
         this.initializeClient(sessionId);
 
-        try {
-            this.qrCallbacks.set(sessionId, async qr => {
-            try {
+        return new Promise((resolve, reject) => {
+            this.qrCallbacks.set(sessionId, async (qr) => {
+              try {
                 const url = await qrcode.toDataURL(qr);
                 if (url) {
-                //return status(200).send({ success: true, message: 'QR code generated.', qr: url });
-                return { success: true, message: 'QR code generated.', qr: url }
+                  resolve({ success: true, message: 'QR code generated.', qr: url });
                 }
-            } catch (err) {
-                if (!url) {
-                //res.status(500).send();
-                return { success: false, error: err.message }
-                }
-            }
+              } catch (err) {
+                reject({ success: false, error: err.message });
+              }
             });
 
             setTimeout(() => {
@@ -153,14 +149,10 @@ public initializeClient = async (sessionId, res = null) => {
             //}
             }, 60000); // Timeout after 60 seconds
 
-        } catch (err) {
+        }).finally(() => {
             this.qrCallbacks.delete(sessionId);
-            //if (!res.headersSent) {
-            //res.status(500).send({ success: false, error: err.message });
-            //}
-            return { success: false, error: err.message }
+          });
         }
-    }
 
     @Get('/login/:sessionId')
     async login( @Param('sessionId') sessionId : string ){
