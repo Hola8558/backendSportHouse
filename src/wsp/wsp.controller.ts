@@ -13,7 +13,7 @@ export class WspController {
     public clients = new Map(); // Store multiple client instances
     public qrCallbacks = new Map(); // Store QR callbacks for each client
     //const upload = multer({ storage: storage });
-
+  public pathWsp = '../../.wwebjs_auth';
 public initializeClient = async (sessionId, res = null) => {
   if (this.clients.has(sessionId)) {
     let existingData = this.clients.get(sessionId);
@@ -29,7 +29,7 @@ public initializeClient = async (sessionId, res = null) => {
   client = new Client({
     authStrategy: new LocalAuth({ 
       clientId: sessionId,
-      dataPath: '/.wwebjs_auth'
+      dataPath: this.pathWsp
      }),
     
     puppeteer: {
@@ -76,7 +76,7 @@ public initializeClient = async (sessionId, res = null) => {
     client.destroy();
     this.clients.delete(sessionId);
     setTimeout(() => {
-      this.deleteDirectory(`/.wwebjs_auth/session-${sessionId}`);
+      this.deleteDirectory(`${this.pathWsp}/session-${sessionId}`);
     }, 1000);
     for (let i = 0; i < this.clientsIds.length; i++){
       if (this.clientsIds[i] === sessionId)
@@ -108,12 +108,12 @@ public initializeClient = async (sessionId, res = null) => {
 
     @Delete('/deleteAllSessions')
     deleteAllSession(){
-        if (!fs.existsSync(`/.wwebjs_auth`)) {
+        if (!fs.existsSync(this.pathWsp)) {
             //res.status(404).send({success: false, message: "No existe ya"})
             return {success: false, message: "No existe ya"}
         }
         try{
-            this.deleteDirectory(`/.wwebjs_auth`);
+            this.deleteDirectory(this.pathWsp);
         }catch(e){
             //res.status(500).send();
             return {msg: e.message};
@@ -158,7 +158,7 @@ public initializeClient = async (sessionId, res = null) => {
     async login( @Param('sessionId') sessionId : string ){
         console.log(`To Loggin ${sessionId}`);
 
-        const directoryPath = '/.wwebjs_auth';
+        const directoryPath = this.pathWsp;
         try {
             await fsProm.access(directoryPath);
         } catch (err) {
@@ -234,7 +234,7 @@ public initializeClient = async (sessionId, res = null) => {
     @Delete('/:sessionId')
 deleteOneSession( @Param('sessionId') sessionId:string ){
   try{
-    this.deleteDirectory(`/.wwebjs_auth/${sessionId}`);
+    this.deleteDirectory(`${this.pathWsp}/${sessionId}`);
     for (let i = 0; i < this.clientsIds.length; i++){
       if (this.clientsIds[i] === sessionId)
         this.clientsIds.splice(i,1);
