@@ -13,8 +13,8 @@ export class WspController {
     public clients = new Map(); // Store multiple client instances
     public qrCallbacks = new Map(); // Store QR callbacks for each client
     //const upload = multer({ storage: storage });
-  //public pathWsp = '/../../.wwebjs_auth';
-  public pathWsp = './.wwebjs_auth';
+  public pathWsp = '/../../.wwebjs_auth';
+  //public pathWsp = './.wwebjs_auth';
 public initializeClient = async (sessionId, res = null) => {
   if (this.clients.has(sessionId)) {
     let existingData = this.clients.get(sessionId);
