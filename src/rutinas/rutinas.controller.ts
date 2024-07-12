@@ -6,7 +6,7 @@ import { EjercicioDto } from './dtos/ejercicios.dto';
 import { EjercicioUpdateDto } from './dtos/ejercicios-update.dto';
 import { rutinaUpdateDto } from './dtos/rutina.dto';
 
-import { Query as ExpressQuery } from 'express-serve-static-core'
+//import { Query as ExpressQuery } from 'express-serve-static-core'
 
 @Controller('rutinas')
 export class rutinasController {
@@ -40,7 +40,7 @@ export class rutinasController {
     /* Paginator */
 
     @Get('/ejerciciosPage')
-    async getEjerciciosByValue(@Query() req: ExpressQuery){
+    async getEjerciciosByValue(@Query() req: any ){//ExpressQuery
         return this.rutinasService.getEjerciciosByValue(req);
     }
 
@@ -50,7 +50,7 @@ export class rutinasController {
     }
 
     @Get('/getEjerciciosPaginados/:grupoM')
-    async getEjerciciosPaginados(@Query() req: ExpressQuery, @Param('grupoM') grupoM : string ){
+    async getEjerciciosPaginados(@Query() req: any, @Param('grupoM') grupoM : string ){ //ExpressQuery
         let page = 0
         if ( +req.page ) { page = +req.page; }
         return this.rutinasService.getEjerciciosPaginados(grupoM, page);
@@ -69,9 +69,9 @@ export class rutinasController {
     }
 
     /** RUTINAS  */
-    @Post('/createRutina')
-    async crearRutina(  @Body() rutina: any ){
-        return this.rutinasService.createRutina(rutina);
+    @Post(':gynName/createRutina')
+    async crearRutina(  @Body() rutina: any, @Param('gynName')gynName : string ){
+        return this.rutinasService.createRutina(rutina, gynName);
     }
 
     @Get('/verRutinas')
@@ -89,9 +89,9 @@ export class rutinasController {
         return this.rutinasService.findOneRutina(id);
     }
 
-    @Delete('/deleteRutina/:id')
-    async deleteRutina ( @Param('id') id: string ){        
-        return this.rutinasService.deleteRutina(id);
+    @Delete(':gynName/deleteRutina/:id')
+    async deleteRutina ( @Param('id') id: string, @Param('gynName')gynName : string ){        
+        return this.rutinasService.deleteRutina(id, gynName);
     }
 
     @Put('/updateRutina/:id')

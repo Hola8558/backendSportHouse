@@ -13,44 +13,44 @@ export class UsuariosController {
 
     //TODO Resgitro
 
-    @Post()
-    async crearUsuario( @Body( new ValidationPipe() ) createdUser: CreateUserDto ){
-        return this.userService.createUser(createdUser);
+    @Post(':gynName')
+    async crearUsuario( @Body( new ValidationPipe() ) createdUser: CreateUserDto, @Param("gynName") gynName : string ){
+        return this.userService.createUser(createdUser, gynName);
     }
 
-    @Put(':id')
-    async update ( @Param('id') id: string, @Body( new ValidationPipe() ) user: UpdateUserDto ) {
-        return this.userService.update( id, user) 
+    @Put(':gynName/:id')
+    async update ( @Param('id') id: string, @Param('gynName') gynName: string, @Body( new ValidationPipe() ) user: UpdateUserDto ) {
+        return this.userService.update( id, user, gynName) 
     }
 
-    @Get()
-    async findAll(){
-        return this.userService.findAll();
+    @Get(':gynName')
+    async findAll(@Param("gynName") gynName : string){
+        return this.userService.findAll(gynName);
     }
 
-    @Get(':id')
-    async findOne( @Param('id') id: string ){
-        return this.userService.findOne(id);
+    @Get(':gynName/:id')
+    async findOne( @Param('id') id: string, @Param('gynName') gynName: string, ){
+        return this.userService.findOne(id, gynName);
     }
 
-    @Delete(':id')
-    async delete ( @Param('id') id: string ){
-        return this.userService.delete(id);
+    @Delete(':gynName/:id')
+    async delete ( @Param('id') id: string, @Param('gynName') gynName: string, ){
+        return this.userService.delete(id, gynName);
     }
 
     //TODO Login
 
-    @Post('login')
-    async login ( @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
-        return this.userService.login(loginUser);
+    @Post(':gynName/login')
+    async login ( @Body( new ValidationPipe() ) loginUser : LoginUserDto, @Param('gynName')gynName: string ){
+        return this.userService.login(loginUser, gynName);
     }
 
-    @Post('checkPass/:user')
-    async checkPass(@Param('user') user : string , @Body() pass : string){
+    @Post(':gynName/checkPass/:user')
+    async checkPass(@Param('user') user : string , @Body() pass : string, @Param('gynName')gynName : string ){
         const userParts = decodeURIComponent(user).split(' ');
         const nombre = userParts.slice(0, -1).join(' ');
         const apellidos = userParts.slice(-1).join(' ');
-        return this.userService.checkPass(nombre.toString(), apellidos.toString(), pass);
+        return this.userService.checkPass(nombre.toString(), apellidos.toString(), pass, gynName);
     }
 
     

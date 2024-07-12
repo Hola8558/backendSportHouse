@@ -2,8 +2,8 @@ import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param } from 
 import { Client, LocalAuth, MessageMedia } from 'whatsapp-web.js';
 import * as fs from 'fs';
 import * as qrcode from 'qrcode';
-import * as fsProm from 'fs/promises'
-import * as fsExt from 'fs-extra'
+import * as fsProm from 'fs/promises';
+import * as fsExt from 'fs-extra';
 import { url } from 'inspector';
 
 @Controller('api')
@@ -13,7 +13,8 @@ export class WspController {
     public clients = new Map(); // Store multiple client instances
     public qrCallbacks = new Map(); // Store QR callbacks for each client
     //const upload = multer({ storage: storage });
-  public pathWsp = '/../../.wwebjs_auth';
+  //public pathWsp = '/../../.wwebjs_auth';
+  public pathWsp = './.wwebjs_auth';
 public initializeClient = async (sessionId, res = null) => {
   if (this.clients.has(sessionId)) {
     let existingData = this.clients.get(sessionId);
@@ -23,8 +24,8 @@ public initializeClient = async (sessionId, res = null) => {
   }
 
   this.clients.set(sessionId, { isInitializing: true });
-  let client = this.clients.get(sessionId).client;
-
+  let client = await this.clients.get(sessionId).client;
+  
   if (!client)
   client = new Client({
     authStrategy: new LocalAuth({ 
@@ -35,21 +36,22 @@ public initializeClient = async (sessionId, res = null) => {
     puppeteer: {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      timeout: 60000
+      timeout: 120000
     },
     webVersionCache: {
-      type: "remote",
-      remotePath: "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+      type: "none",
     },
   });
+  
+  //remotePath: "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
 
-  client.on('qr', qr => {
-    const callback = this.qrCallbacks.get(sessionId);
+  client.on('qr', async qr => {
+    const callback = await this.qrCallbacks.get(sessionId);
     if (callback) {
       callback(qr);
     }
   });
-
+  
   client.on('ready', () => {
     console.log(`Client ${sessionId} is ready!`);
     this.qrCallbacks.delete(sessionId);
@@ -58,6 +60,7 @@ public initializeClient = async (sessionId, res = null) => {
       res.status(200).send({ success: true, message: 'Session is ready.' });
     }
   });
+  
   client.on('authenticated', () => {
     console.log(`Client ${sessionId} authenticated`);
     this.clientsIds.push(sessionId)
@@ -83,7 +86,6 @@ public initializeClient = async (sessionId, res = null) => {
         this.clientsIds.splice(i,1);
     }
   });
-
   try {
     await client.initialize();
   } catch (e) {
@@ -122,7 +124,7 @@ public initializeClient = async (sessionId, res = null) => {
 
     @Get('/qr/:sessionId')
     getQr( @Param('sessionId') sessionId : string ){
-
+        console.log(`Getting Qr for ${sessionId}`);
         if (this.clients.has(sessionId) && this.clients.get(sessionId).client && this.clients.get(sessionId).client.info) {
             //return res.status(200).send({ success: true, message: 'Ya existe una sesión iniciada.' });
             return { success: true, message: 'Ya existe una sesión iniciada.' }

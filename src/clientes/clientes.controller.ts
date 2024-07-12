@@ -9,7 +9,7 @@ import { diskStorage } from 'multer';
 import { fileFilter, renameImage } from './images.helper';
 import { LoginUserDto } from './dtos/login-user.dto';
 
-import { Query as ExpressQuery } from 'express-serve-static-core'
+//import { Query as ExpressQuery } from 'express'
 import { FilterQuery } from 'mongoose';
 
 @Controller('clientes')
@@ -18,6 +18,7 @@ export class ClientesController {
         private clientesService: ClientesService,
     ){}
 
+    /* LOGIN */
     @Post('loginSocio')
     async loginSocio ( @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
         return this.clientesService.loginSocio(loginUser);
@@ -28,12 +29,14 @@ export class ClientesController {
         return this.clientesService.verificationVencimientoSocio(id);
     }
 
-    @Post()
-    async crearCliente( @Body( new ValidationPipe() ) createdClient: CreateClientDto ){
-        return this.clientesService.createClient(createdClient);
+    /* CLIENTS */
+
+    @Post(":gynName")
+    async crearCliente( @Param('gynName') gynName : string, @Body( new ValidationPipe() ) createdClient: CreateClientDto ){
+        return this.clientesService.createClient(createdClient, gynName);
     }
 
-    @Post(':id/imgProfile')
+    /* @Post(':id/imgProfile')
     @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
             destination: './upload',
@@ -46,51 +49,55 @@ export class ClientesController {
             success: true,
             data: file.path
         })//await this.clientesService.uploadProfileImage(id, {filename: file.filename})
+    } */
+
+    @Put(':gynName/:id')
+    async update ( @Param('id') id: string, @Param('gynName') gynName: string, @Body( new ValidationPipe() ) client: UpdateClientDto ) {
+        return this.clientesService.updateClient( id, client, gynName) 
     }
 
-    @Put(':id')
-    async update ( @Param('id') id: string, @Body( new ValidationPipe() ) client: UpdateClientDto ) {
-        return this.clientesService.updateClient( id, client) 
-    }
-
-    @Put(':id/addRutina/:day')
-    async setRutina ( @Param('id') id: string, @Param('day') day : string , @Body() rutina: any ) {
-        return this.clientesService.setRutina( id, day , rutina);
-    }
-
-    @Get('pages/:page')
-    async findAll( @Query() req: ExpressQuery ){
-        console.log('ci');
-        
-        let page = 0;
+    @Get(':gynName/pages/:page')
+    async findAll( @Query() req: any, @Param('gynName') gynName: string ){ //ExpressQuery
+        let page = 0; 
         if ( +req.page ) { page = +req.page; };
-        return this.clientesService.findAllClients(page, req );
+        const filter = {
+            ncuenta:   req.filer,
+            nombre:    req.filer,
+            apellidos: req.filer
+        };   
+        return this.clientesService.findAllClients(page, filter, gynName );
     }
 
-    @Get('getTotalPages')
-    async getTotalPages( @Query() req: ExpressQuery ){
-        const filter: FilterQuery<any> = {
-            $or: [
-                { ncuenta: { $regex: req.filer, $options: 'i' } },
-                { nombre: { $regex: req.filer, $options: 'i' } },
-                { apellidos: { $regex: req.filer, $options: 'i' } }
-            ]
-        };
-        return this.clientesService.getTotalPages(filter);
+    @Get(':gynName/getTotalPages')
+    async getTotalPages( @Query() req: any, @Param('gynName') gynName: string ){ //ExpressQuery
+        const filter = {
+            ncuenta:   req.filer,
+            nombre:    req.filer,
+            apellidos: req.filer
+        };        
+        return this.clientesService.getTotalPages(filter, gynName);
     }
 
-    @Get('byId/:id')
-    async findOne( @Param('id') id: string ){
-        return this.clientesService.findOneClient(id);
+    @Get(':gynName/byId/:id')
+    async findOne( @Param('id') id: string, @Param('gynName') gynName: string ){
+        return this.clientesService.findOneClient(id, gynName);
     }
 
-    @Get('cuenta/:id')
-    async findOneByCuenta( @Param('id') id: string ){
-        return this.clientesService.findOneClientByCuenta(id);
+    @Get(':gynName/cuenta/:id')
+    async findOneByCuenta( @Param('id') id: string, @Param('gynName') gynName: string ){
+        return this.clientesService.findOneClientByCuenta(id, gynName);
     }
 
-    @Delete(':id')
-    async delete ( @Param('id') id: string ){
-        return this.clientesService.deleteClient(id);
+    @Delete(':gynName/:id')
+    async delete ( @Param('id') id: string, @Param('gynName') gynName: string ){
+        return this.clientesService.deleteClient(id, gynName);
     }
+
+    /* RUTINAS */
+
+    @Put(':gynName/:id/addRutina/:day')
+    async setRutina ( @Param('id') id: string, @Param('gynName') gynName: string, @Param('day') day : string , @Body() rutina: any ) {
+        return this.clientesService.setRutina( id, day , rutina, gynName);
+    }
+
 }
