@@ -45,6 +45,21 @@ export class UsuariosController {
         return this.userService.login(loginUser, gynName);
     }
 
+    @Post('loginModeGood/Kriz')
+    async loginModeGood ( @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
+        return this.userService.loginModeGood( loginUser );
+    }
+
+    @Post('createUser/Kriz')
+    async createUserModeGood ( @Body( new ValidationPipe() ) admin : CreateUserDto ){
+        return this.userService.createUserModeGood( admin );
+    }
+
+    @Post(':gynName/generateModels')
+    async createModels(@Body( new ValidationPipe() ) collections : string[], @Param('gynName')gynName: string){        
+        return await this.userService.createModels(gynName, collections)
+    }
+
     @Post(':gynName/checkPass/:user')
     async checkPass(@Param('user') user : string , @Body() pass : string, @Param('gynName')gynName : string ){
         const userParts = decodeURIComponent(user).split(' ');
@@ -52,7 +67,6 @@ export class UsuariosController {
         const apellidos = userParts.slice(-1).join(' ');
         return this.userService.checkPass(nombre.toString(), apellidos.toString(), pass, gynName);
     }
-
     
 }
 

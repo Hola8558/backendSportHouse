@@ -19,14 +19,14 @@ export class ClientesController {
     ){}
 
     /* LOGIN */
-    @Post('loginSocio')
-    async loginSocio ( @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
-        return this.clientesService.loginSocio(loginUser);
+    @Post(':gynName/loginSocio')
+    async loginSocio ( @Param('gynName') gynName : string, @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
+        return this.clientesService.loginSocio( gynName, loginUser );
     }
 
     @Get('verificationLoginSocio/:id')
     async verificationVencimientoSocio ( @Param('id') id : string ){
-        return this.clientesService.verificationVencimientoSocio(id);
+        //return this.clientesService.verificationVencimientoSocio(id);
     }
 
     /* CLIENTS */

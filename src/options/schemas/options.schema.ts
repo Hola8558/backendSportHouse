@@ -1,4 +1,4 @@
-import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
+/* import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema()
 export class Options {
@@ -6,4 +6,4 @@ export class Options {
     numeroRutinas: string;
 }
 
-export const OptionsSchema = SchemaFactory.createForClass(Options);
+export const OptionsSchema = SchemaFactory.createForClass(Options); */

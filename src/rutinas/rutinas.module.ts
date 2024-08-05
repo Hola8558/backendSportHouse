@@ -7,15 +7,16 @@ import { rutinasController } from './rutinas.controller';
 import { Ejercicio, EjercicioSchema } from './schemas/ejercicios.schema';
 import { Rutina, RutinaSchema } from './schemas/rutinas.schema';
 
+/* {
+    name: Rutina.name,
+    schema: RutinaSchema
+} */
 @Module({
     imports:[
         MongooseModule.forFeature([{
             name: Ejercicio.name,
             schema: EjercicioSchema
-        },{
-            name: Rutina.name,
-            schema: RutinaSchema
-        }
+        },
     ])
     ],
     providers: [rutinasService],

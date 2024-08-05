@@ -22,38 +22,38 @@ export class rutinasController {
         return this.rutinasService.createEjercicio(ejercicio);
     }
 
-    @Put('/ejercicio/:id')
-    async updateEjercicio ( @Param('id') id: string, @Body( new ValidationPipe() ) ejercicio: EjercicioUpdateDto ) {
-        return this.rutinasService.updateEjercicio( id, ejercicio) 
+    @Put(':gynName/ejercicio/:id')
+    async updateEjercicio ( @Param('gynName')gynName : string, @Param('id') id: string, @Body( new ValidationPipe() ) ejercicio: EjercicioUpdateDto ) {
+        return this.rutinasService.updateEjercicio(gynName, id, ejercicio) 
     }
 
-    @Get('/ejercicios')
-    async findAllEjercicios(){
-        return this.rutinasService.findAllEjercicios();
+    @Get(':gynName/ejercicios')
+    async findAllEjercicios(@Param('gynName')gynName : string,){
+        return this.rutinasService.findAllEjercicios(gynName);
     }
 
-    @Get('/ejercicio/:id')
-    async findOneEjercicio( @Param('id') id: string ){
-        return this.rutinasService.findOneEjercicio(id);
+    @Get(':gynName/ejercicio/:id')
+    async findOneEjercicio( @Param('gynName')gynName : string, @Param('id') id: string ){
+        return this.rutinasService.findOneEjercicio(gynName, id);
     }
 
     /* Paginator */
 
-    @Get('/ejerciciosPage')
-    async getEjerciciosByValue(@Query() req: any ){//ExpressQuery
-        return this.rutinasService.getEjerciciosByValue(req);
+    @Get(':gynName/ejerciciosPage')
+    async getEjerciciosByValue( @Param('gynName')gynName : string, @Query() req: any ){//ExpressQuery
+        return this.rutinasService.getEjerciciosByValue( gynName, req );
     }
 
-    @Get('/ejerciciosPageStepper')
-    async getEjerciciosByPage(){
-        return this.rutinasService.getEjerciciosByPage();
+    @Get(':gynName/ejerciciosPageStepper')
+    async getEjerciciosByPage( @Param('gynName')gynName : string, ){
+        return this.rutinasService.getEjerciciosByPage( gynName );
     }
 
-    @Get('/getEjerciciosPaginados/:grupoM')
-    async getEjerciciosPaginados(@Query() req: any, @Param('grupoM') grupoM : string ){ //ExpressQuery
+    @Get(':gynName/getEjerciciosPaginados/:grupoM')
+    async getEjerciciosPaginados( @Param('gynName')gynName : string, @Query() req: any, @Param('grupoM') grupoM : string ){ //ExpressQuery
         let page = 0
         if ( +req.page ) { page = +req.page; }
-        return this.rutinasService.getEjerciciosPaginados(grupoM, page);
+        return this.rutinasService.getEjerciciosPaginados( gynName, grupoM, page);
     }
 
     @Get('/gruposMusculares')
@@ -63,9 +63,9 @@ export class rutinasController {
 
     /* Paginator */
 
-    @Delete('/ejercicio/:id')
-    async deleteEjercicios ( @Param('id') id: string ){
-        return this.rutinasService.deleteEjercicio(id);
+    @Delete(':gynName/ejercicio/:id')
+    async deleteEjercicios ( @Param('gynName')gynName : string, @Param('id') id: string ){
+        return this.rutinasService.deleteEjercicio(gynName, id);
     }
 
     /** RUTINAS  */
@@ -74,19 +74,19 @@ export class rutinasController {
         return this.rutinasService.createRutina(rutina, gynName);
     }
 
-    @Get('/verRutinas')
+    /* @Get('/verRutinas')
     async findAllRutinas(){
         return this.rutinasService.findAllRutinas();
+    } */
+
+    @Get(':gynName/getAllRutinasStarred')
+    async getAllRutinasStarred(@Param('gynName')gynName : string){
+        return this.rutinasService.getAllRutinasStarred(gynName);
     }
 
-    @Get('/getAllRutinasStarred')
-    async getAllRutinasStarred(){
-        return this.rutinasService.getAllRutinasStarred();
-    }
-
-    @Get('/rutinasUna/:id')
-    async findOneRutina( @Param('id') id: string ){        
-        return this.rutinasService.findOneRutina(id);
+    @Get(':gynName/rutinasUna/:id')
+    async findOneRutina( @Param('id') id: string, @Param('gynName')gynName : string ){        
+        return this.rutinasService.findOneRutina(gynName, id);
     }
 
     @Delete(':gynName/deleteRutina/:id')
@@ -99,9 +99,9 @@ export class rutinasController {
         return this.rutinasService.updateRutina(id, rutina);
     }
 
-    @Put('/updateRutinaEjercicios/:id')
-    async updateRutinaEjercicios (@Param('id') id: string, @Body( new ValidationPipe() ) rutina : any){
-        return this.rutinasService.updateRutinaEjercicios(id, rutina);
+    @Put(':gynName/updateRutinaEjercicios/:id')
+    async updateRutinaEjercicios (@Param('id') id: string, @Body( new ValidationPipe() ) rutina : any, @Param('gynName')gynName : string){
+        return this.rutinasService.updateRutinaEjercicios(gynName, id, rutina);
     }
 
 }

@@ -13,28 +13,34 @@ import { LoginUserDto } from "./dtos/login-user.dto";
 @Injectable()
 export class ClientesService {
     constructor(
-        @InjectModel(Client.name) private clientModel: Model<Client>,
+        //@InjectModel(Client.name) private clientModel: Model<Client>,
         @InjectConnection() private readonly connection: Connection
     ){}
 
     private pageNumberClients = 15;
 
     /* LOGIN */
-    async loginSocio ( socio : LoginUserDto ) {
+    async loginSocio ( gynName:string, socio : LoginUserDto ) {
         const { email, contrasena } = socio;
-        const finUser = await this.clientModel.findOne({ncuenta: email});
-        if ( !finUser ) throw new HttpException('Socio_no_encontrado', 404);
-
-        if (this.fechaYaPaso(finUser.fechaVencimiento) === true) throw new HttpException('Usuario_vencido', 403);
-        const checkPass = await compare(contrasena, finUser.pass);
-        if (!checkPass) throw new HttpException('Contraseña_incorrecta', 403);
-//
-        const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
-        //// Retorna un objeto que incluye la data del usuario y el token
-        return { userData: finUser, token };
+        const dynamicModel = await this.generateDynamicalModel(gynName, "clients");
+        const existingDocument = await dynamicModel.findOne({ ["clients"]: { $exists: true } });
+        const clients = existingDocument["clients"]
+        if (clients){
+            const finUser = clients.find(c => c.ncuenta === email);
+            if ( !finUser ) throw new HttpException('Socio_no_encontrado', 404);
+            if (this.fechaYaPaso(finUser.fechaVencimiento) === true) return new HttpException('Usuario_vencido', 403);
+            const checkPass = await compare(contrasena, finUser.pass);
+            if (!checkPass) return new HttpException('Contraseña_incorrecta', 403);
+    //
+            const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
+            //// Retorna un objeto que incluye la data del usuario y el token
+            return { userData: finUser, token };
+        }else {
+            return new HttpException('Socio no encotrado', 404);
+        }       
     }
 
-    async verificationVencimientoSocio( id : string ){
+   /*  async verificationVencimientoSocio( id : string ){
         const finUser = await this.clientModel.findOne({_id: id});
         if ( !finUser ) throw new HttpException('Socio_no_encontrado', 404);
 
@@ -42,7 +48,7 @@ export class ClientesService {
         const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
         //// Retorna un objeto que incluye la data del usuario y el token
         return { userData: finUser, token };
-    }
+    } */
 
     fechaYaPaso(fechaString:string) {
         const fechaActual = new Date();
@@ -51,22 +57,20 @@ export class ClientesService {
     } 
 
     /* GENERA MODELO DINÁMICO */
-    async generateDynamicalModel( gynName : string, subCollection : string ) : Promise<Model<Document>> {
+    async generateDynamicalModel(gynName: string, subCollection: string): Promise<Model<Document>> {
         let dynamicModel: Model<Document>;
         try {
-            dynamicModel = this.connection.model(gynName);
+            this.connection.deleteModel(gynName);
         } catch (error) {
-            if (error.name === 'MissingSchemaError') {
-              const subSchema = new Schema({}, { strict: false });
-              const mainSchema = new Schema({
-              [subCollection]: [subSchema]
-            }, { strict: false });
-            dynamicModel = this.connection.model<Document>(gynName, mainSchema);
-            } else {
+            if (error.name !== 'MissingSchemaError') {
                 throw error;
             }
         }
-
+        const subSchema = new Schema({}, { strict: false });
+        const mainSchema = new Schema({
+            [subCollection]: [subSchema]
+        }, { strict: false });
+        dynamicModel = this.connection.model<Document>(gynName, mainSchema);
         return dynamicModel;
     }
 
@@ -77,7 +81,6 @@ export class ClientesService {
         client = { ...client, pass:plainToHash };
         const dynamicModel = await this.generateDynamicalModel(gynName, "clients");
         const existingDocument = await dynamicModel.findOne({ ["clients"]: { $exists: true } });
-
         if (existingDocument) {
             existingDocument["clients"].push(client);
             await existingDocument.save();
@@ -192,9 +195,9 @@ export class ClientesService {
         const existingDocument = await dynamicModel.findOne({ ["clients"]: { $exists: true } });
         if (existingDocument) {
             // Actualiza el documento eliminando el cliente con el ID especificado
-            await dynamicModel.deleteOne( { ["clients._id"]:id }
-                /* { ["clients._id"]: id },  // Condición para encontrar el cliente
-                { $pull: { clients: { _id: id } } }  // Operación para eliminar el cliente */
+            await dynamicModel.updateOne(
+                { ["clients._id"]: new ObjectId(id) },  // Condición para encontrar el cliente
+                { $pull: { clients: { _id: new ObjectId(id) } } }  // Operación para eliminar el cliente
             ).then( () => {
                 console.log("Client deleted successfully")
                 return { message: "Client deleted successfully" };
@@ -218,7 +221,6 @@ export class ClientesService {
         if (e.rutinas) {
             rutinas = { ...rutinas, ...e.rutinas };
         }
-    
         switch (d) {
             case 'Lunes': rutinas.l = rutina.rutina; break;
             case 'Martes': rutinas.M = rutina.rutina; break;
@@ -231,9 +233,8 @@ export class ClientesService {
     
         const updateFields = {};
         updateFields[`clients.$.rutinas`] = rutinas;
-    
         const result = await dynamicModel.updateOne(
-            { "clients._id": new ObjectId(id) },
+            { "clients._id": id },
             { $set: updateFields }
         );
     

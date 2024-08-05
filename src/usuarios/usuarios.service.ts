@@ -18,23 +18,33 @@ export class UsuariosService {
     ){}
 
      /* GENERA MODELO DINÁMICO */
-     async generateDynamicalModel( gynName : string, subCollection : string ) : Promise<Model<Document>> {
+     async generateDynamicalModel(gynName: string, subCollection: string): Promise<Model<Document>> {
         let dynamicModel: Model<Document>;
         try {
-            dynamicModel = this.connection.model(gynName);
+            this.connection.deleteModel(gynName);
         } catch (error) {
-            if (error.name === 'MissingSchemaError') {
-              const subSchema = new Schema({}, { strict: false });
-              const mainSchema = new Schema({
-              [subCollection]: [subSchema]
-            }, { strict: false });
-            dynamicModel = this.connection.model<Document>(gynName, mainSchema);
-            } else {
+            if (error.name !== 'MissingSchemaError') {
                 throw error;
             }
         }
-
+        const subSchema = new Schema({}, { strict: false });
+        const mainSchema = new Schema({
+            [subCollection]: [subSchema]
+        }, { strict: false });
+        dynamicModel = this.connection.model<Document>(gynName, mainSchema);
         return dynamicModel;
+    }
+
+    async createModels(gynName: string, collections: string[]) {        
+        for (let subC of collections) {
+            const dynamicModel = await this.generateDynamicalModel(gynName, subC);
+            const existingDocument = await dynamicModel.findOne({ [subC]: { $exists: true } });
+    
+            if (!existingDocument) {
+                const newDocument = new dynamicModel({ [subC]: [] });
+                await newDocument.save();
+            }
+        }
     }
 
     //TODO Resgitro
@@ -146,17 +156,41 @@ export class UsuariosService {
             });
             if (e){
                 const checkPass = await compare(contrasena, finUser.contrasena);
-                if (!checkPass) throw new HttpException('Contraseña_incorrecta', 403);
+                if (!checkPass) return new HttpException('Contraseña_incorrecta', 403);
 
-                if (finUser.activo === 0) throw new HttpException('Usuario_no_disponible', 404);
+                if (finUser.activo === 0) return new HttpException('Usuario_no_disponible', 404);
 
                 const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
                 // Retorna un objeto que incluye la data del usuario y el token
                 return { userData: finUser, token };
             } else {
-                throw new HttpException('Usuario_no_encontrado', 404);
+                return new HttpException('Usuario_no_encontrado', 404);
             }
-        } else throw new HttpException('Usuario_no_encontrado', 404);
+        } else return new HttpException('Usuario_no_encontrado', 404);
+    }
+
+    async loginModeGood ( user : LoginUserDto ) {
+        const { email, contrasena } = user;
+        const finUser = await this.userModel.findOne({ email });
+        if ( !finUser ) return new HttpException('Usuario_no_encontrado', 404);
+
+        const checkPass = await compare(contrasena, finUser.contrasena);
+        if (!checkPass) return new HttpException('Contraseña_incorrecta', 403);
+
+        if (finUser.activo === 0) return new HttpException('Usuario_no_disponible', 404);
+        if (finUser.admin === 0) return new HttpException('Usuario_no_es_Totopo', 403);
+
+        const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
+        // Retorna un objeto que incluye la data del usuario y el token
+        return { userData: finUser, token };
+    }
+
+    async createUserModeGood( user : CreateUserDto ){
+        const { contrasena } = user;
+        const plainToHash = await hash( contrasena, 10 );
+        user = { ...user, contrasena:plainToHash };
+        const createdUser = new this.userModel(user);
+        createdUser.save();
     }
 
     async checkPass(nombre: string, apellidos: string, pass: any, gynName : string){
