@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -12,6 +12,9 @@ import config  from './config';
 import * as Joi from 'joi';
 import { OptionsModule } from './options/options.module';
 import { WspModule } from './wsp/wsp.module';
+import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { AuthMiddleware } from './auth-middleware.guard';
+import { PayProccessModule } from './payments/payProccess.module';
 
 @Module({
   imports: [
@@ -30,9 +33,21 @@ import { WspModule } from './wsp/wsp.module';
     ClientesModule,
     RutinasModule,
     OptionsModule,
+    PayProccessModule,
     WspModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  
+  /* configure(consumer : MiddlewareConsumer) {
+    console.log('Configuring Middleware...');
+    consumer
+    .apply(AuthMiddleware)
+    .forRoutes(
+      { path: 'rutinas', method: RequestMethod.ALL }
+    );
+    console.log('Middleware configured for /rutinas');
+  } */
+}

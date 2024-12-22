@@ -56,8 +56,8 @@ export class UsuariosController {
     }
 
     @Post(':gynName/generateModels')
-    async createModels(@Body( new ValidationPipe() ) collections : string[], @Param('gynName')gynName: string){        
-        return await this.userService.createModels(gynName, collections)
+    async createModels(@Body( new ValidationPipe() ) collections : any, @Param('gynName')gynName: string){
+        return await this.userService.createModels(gynName, collections.collections)
     }
 
     @Post(':gynName/checkPass/:user')

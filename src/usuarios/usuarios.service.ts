@@ -160,7 +160,7 @@ export class UsuariosService {
 
                 if (finUser.activo === 0) return new HttpException('Usuario_no_disponible', 404);
 
-                const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
+                const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '96d' });
                 // Retorna un objeto que incluye la data del usuario y el token
                 return { userData: finUser, token };
             } else {
@@ -231,3 +231,4 @@ export class UsuariosService {
 
     
 }
+ 
