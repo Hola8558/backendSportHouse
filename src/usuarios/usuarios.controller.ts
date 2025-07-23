@@ -1,9 +1,11 @@
-import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param, HttpException } from '@nestjs/common';
 
 import { UsuariosService } from './usuarios.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
+
+import * as jwt from 'jsonwebtoken';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -15,7 +17,7 @@ export class UsuariosController {
 
     @Post(':gynName')
     async crearUsuario( @Body( new ValidationPipe() ) createdUser: CreateUserDto, @Param("gynName") gynName : string ){
-        return this.userService.createUser(createdUser, gynName);
+        return this.userService.createUser(gynName, createdUser);
     }
 
     @Put(':gynName/:id')
@@ -45,6 +47,11 @@ export class UsuariosController {
         return this.userService.login(loginUser, gynName);
     }
 
+    @Post(':gynName/generateFreeToken')
+    async generateFreeToken(@Param('gynName') gynName: string) {
+        return this.userService.generateFreeToken(gynName);
+    }
+
     @Post('loginModeGood/Kriz')
     async loginModeGood ( @Body( new ValidationPipe() ) loginUser : LoginUserDto ){
         return this.userService.loginModeGood( loginUser );
@@ -55,8 +62,8 @@ export class UsuariosController {
         return this.userService.createUserModeGood( admin );
     }
 
-    @Post(':gynName/generateModels')
-    async createModels(@Body( new ValidationPipe() ) collections : any, @Param('gynName')gynName: string){
+    @Post(':gynName/generateModels/:prefix?')
+    async createModels(@Body( new ValidationPipe() ) collections : any, @Param('gynName')gynName: string){        
         return await this.userService.createModels(gynName, collections.collections)
     }
 
@@ -66,6 +73,21 @@ export class UsuariosController {
         const nombre = userParts.slice(0, -1).join(' ');
         const apellidos = userParts.slice(-1).join(' ');
         return this.userService.checkPass(nombre.toString(), apellidos.toString(), pass, gynName);
+    }
+
+    @Post(':gymName/verifyToken/:prefix?')
+    async verifyToken(@Param() gym, @Body() token: any){
+        try {
+            const decoded : any = jwt.verify(token.token, 'secretKey');
+            return decoded.id === gym.gymName;
+        } catch (err) {
+            return new HttpException('Token inválido o expirado en funcion verufyToken  ', 401);
+        }
+    }
+
+    @Get(':gymName/gymExists')
+    async gymExists(@Param() gym){
+        return this.userService.gymExists(gym);
     }
     
 }

@@ -30,9 +30,8 @@ export class ClientesService {
             if ( !finUser ) throw new HttpException('Socio_no_encontrado', 404);
             if (this.fechaYaPaso(finUser.fechaVencimiento) === true) return new HttpException('Usuario_vencido', 403);
             const checkPass = await compare(contrasena, finUser.pass);
-            if (!checkPass) return new HttpException('Contraseña_incorrecta', 403);
-    //
-            const token = jwt.sign({ id: finUser.id }, 'secretKey', { expiresIn: '1h' });
+            if (!checkPass) return new HttpException('Contraseña_incorrecta', 403);            
+            const token = jwt.sign({ id: gynName }, 'secretKey', { expiresIn: '4h' }); //TODO: Realmente debe ser así?
             //// Retorna un objeto que incluye la data del usuario y el token
             return { userData: finUser, token };
         }else {
@@ -177,6 +176,15 @@ export class ClientesService {
         }
     }
 
+    async getNumberOfClientsExist( gynName : string ){
+        const dynamicModel = await this.generateDynamicalModel(gynName, "clients");
+        const existingDocument = await dynamicModel.findOne({ ["clients"]: { $exists: true } });
+        const clients = existingDocument["clients"];
+        if (!clients) return new HttpException("No se encontró coleccion de socios.", 400);
+        const res = clients.length  || 0;
+        return res;
+    }
+
     async findOneClientByCuenta( ncuenta: string, gynName : string ){
         const dynamicModel = await this.generateDynamicalModel(gynName, "clients");
         const existingDocument = await dynamicModel.findOne({ ["clients"]: { $exists: true } });
@@ -199,7 +207,6 @@ export class ClientesService {
                 { ["clients._id"]: new ObjectId(id) },  // Condición para encontrar el cliente
                 { $pull: { clients: { _id: new ObjectId(id) } } }  // Operación para eliminar el cliente
             ).then( () => {
-                console.log("Client deleted successfully")
                 return { message: "Client deleted successfully" };
             })
         } else {
@@ -245,5 +252,16 @@ export class ClientesService {
     
         const updatedClient = await this.findOneClient(id, gynName);   
         return updatedClient;
+    }
+
+    async getClientsNumberForSub(gynName: string, type:string){
+        const dynamicModel = await this.generateDynamicalModel(gynName, "clients");
+        const existingDocument = await dynamicModel.findOne({ ["clients"]: { $exists: true } });
+        const clients = existingDocument["clients"] as any[];
+        if (!clients) return new Error("No existe lista de clientes");
+
+        let use = 0;
+        clients.forEach(c => { if (c.tipoMensualidad === type) use++ });
+        return use;
     }
 }

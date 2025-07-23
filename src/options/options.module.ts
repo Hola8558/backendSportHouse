@@ -8,6 +8,7 @@ import { OptionsController } from './options.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import * as multer from 'multer';
 import { AuthMiddleware } from 'src/auth-middleware.guard';
+import { ClientesService } from 'src/clientes/clientes.service';
 /*   MongooseModule.forFeature([{
             name: Options.name,
             schema: OptionsSchema
@@ -19,8 +20,9 @@ import { AuthMiddleware } from 'src/auth-middleware.guard';
         storage: multer.memoryStorage(), // Store files in memory
       }),
     ],
-    providers: [OptionsService],
-    controllers: [OptionsController]
+    providers: [OptionsService, ClientesService],
+    controllers: [OptionsController],
+    exports:[OptionsService]
 })
 export class OptionsModule implements NestModule{
     configure(consumer: MiddlewareConsumer) {

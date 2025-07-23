@@ -32,7 +32,7 @@ export class rutinasController {
         return this.rutinasService.findAllEjercicios(gynName);
     }
 
-    @Get(':gynName/ejercicio/:id')
+    @Get(':gynName/ejercicio/:prefix?/:id')
     async findOneEjercicio( @Param('gynName')gynName : string, @Param('id') id: string ){
         return this.rutinasService.findOneEjercicio(gynName, id);
     }
@@ -84,7 +84,7 @@ export class rutinasController {
         return this.rutinasService.getAllRutinasStarred(gynName);
     }
 
-    @Get(':gynName/rutinasUna/:id')
+    @Get(':gynName/rutinasUna/socios/:id')
     async findOneRutina( @Param('id') id: string, @Param('gynName')gynName : string ){        
         return this.rutinasService.findOneRutina(gynName, id);
     }

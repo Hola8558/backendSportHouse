@@ -9,6 +9,7 @@ import { User } from './schemas/user.schema';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
+import { DuplicateElementError } from './error-manager';
 
 @Injectable()
 export class UsuariosService {
@@ -35,11 +36,11 @@ export class UsuariosService {
         return dynamicModel;
     }
 
-    async createModels(gynName: string, collections: string[]) {        
+    async createModels(gynName: string, collections: string[]) {   
+        if(collections)
         for (let subC of collections) {
             const dynamicModel = await this.generateDynamicalModel(gynName, subC);
-            const existingDocument = await dynamicModel.findOne({ [subC]: { $exists: true } });
-    
+            const existingDocument = await dynamicModel.findOne({ [subC]: { $exists: true } });            
             if (!existingDocument) {
                 const newDocument = new dynamicModel({ [subC]: [] });
                 await newDocument.save();
@@ -47,17 +48,16 @@ export class UsuariosService {
         }
     }
 
-    //TODO Resgitro
-    async createUser( user : CreateUserDto, gynName : string ){
+    async createUser( gynName : string, user : CreateUserDto ){
         const { contrasena } = user;
         const plainToHash = await hash( contrasena, 10 );
         user = { ...user, contrasena:plainToHash };
-        /* const createdUser = new this.userModel(user);
-        createdUser.save(); */
         const dynamicModel = await this.generateDynamicalModel(gynName, "usuarios");
         const existingDocument = await dynamicModel.findOne({ ["usuarios"]: { $exists: true } });
 
         if (existingDocument) {
+            const userExists = existingDocument["usuarios"].some(u => u.email === user.email);
+            if (userExists) throw new DuplicateElementError(user.email);
             existingDocument["usuarios"].push(user);
             await existingDocument.save();
         } else {
@@ -169,6 +169,10 @@ export class UsuariosService {
         } else return new HttpException('Usuario_no_encontrado', 404);
     }
 
+    async generateFreeToken(gynName:string){
+        return {token: jwt.sign({ id: gynName }, 'secretKey', { expiresIn: '96d' })};
+    }
+
     async loginModeGood ( user : LoginUserDto ) {
         const { email, contrasena } = user;
         const finUser = await this.userModel.findOne({ email });
@@ -191,6 +195,11 @@ export class UsuariosService {
         user = { ...user, contrasena:plainToHash };
         const createdUser = new this.userModel(user);
         createdUser.save();
+    }
+
+    async gymExists(gymName: string){
+        const collections = await this.connection.db.listCollections({ name: gymName }).toArray();
+        return {res: collections.length > 0};
     }
 
     async checkPass(nombre: string, apellidos: string, pass: any, gynName : string){

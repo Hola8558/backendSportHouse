@@ -3,14 +3,8 @@ import { Controller, Post, Body, ValidationPipe, Put, Get, Delete, Param, UseInt
 /////////////////
 import { ClientesService } from "./clientes.service";
 import { CreateClientDto } from './dtos/create-client.dto';
-import { UpdateClientDto, rutinasDTO } from './dtos/update-client.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { fileFilter, renameImage } from './images.helper';
+import { UpdateClientDto } from './dtos/update-client.dto';
 import { LoginUserDto } from './dtos/login-user.dto';
-
-//import { Query as ExpressQuery } from 'express'
-import { FilterQuery } from 'mongoose';
 
 @Controller('clientes')
 export class ClientesController {
@@ -78,7 +72,12 @@ export class ClientesController {
         return this.clientesService.getTotalPages(filter, gynName);
     }
 
-    @Get(':gynName/byId/:id')
+    @Get(':gynName/getNumberOfClientsExist')
+    async getNumberOfClientsExist( @Param('gynName') gynName: string ){
+        return this.clientesService.getNumberOfClientsExist( gynName );
+    }
+
+    @Get(':gynName/byId/:prefix?/:id')
     async findOne( @Param('id') id: string, @Param('gynName') gynName: string ){
         return this.clientesService.findOneClient(id, gynName);
     }

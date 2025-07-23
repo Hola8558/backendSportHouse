@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Put, Res, UploadedFile, UseIntercep
 import { OptionsService } from "./options.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { Response } from 'express';
+import { Subscription } from "./dtos/subscription-interface.interface";
 
 @Controller('options')
 export class OptionsController {
@@ -38,28 +39,58 @@ export class OptionsController {
         return this.optionsService.deleteGymDef( gynName, name.name );
     }
 
+    @Post(':gynName/setSubscriptions')
+    async setSubscriptions( @Param('gynName')gynName : string, @Body(new ValidationPipe()) subs : {subs : Subscription[]} ){   
+        return this.optionsService.setSubscriptions( gynName, subs.subs );
+    }
 
-    @Get(':gynName/wspId')
+    @Post(':gynName/showErrorsClient')
+    async showErrorsClient( @Param('gynName')gynName : string, @Body() data:any ){
+        return this.optionsService.showErrorsClient( gynName, data );
+    }
+
+
+    @Get(':gynName/getSubscriptions')
+    async getSubscriptions( @Param('gynName')gynName : string ){
+        return await this.optionsService.getSubscriptions( gynName );
+    }
+
+    @Get(':gynName/getAppErrors/:prefix?')
+    async getAppErrors( @Param('gynName')gynName : string ){
+        return await this.optionsService.getAppErrors( gynName );
+    }
+
+    @Get(':gynName/getStatusSubscription/:prefix?')
+    async getStatusSubscription( @Param('gynName')gynName : string ){
+        return await this.optionsService.getStatusSubscription( gynName );
+    }
+
+    @Get(':gynName/getnumberSociosMax')
+    async numberSociosMax( @Param('gynName')gynName : string ){
+        return await this.optionsService.getNumberSociosMax( gynName );
+    }
+
+    @Get(':gynName/wspId/:prefix?')
     async gwtSwspId( @Param('gynName')gynName : string ){
         return await this.optionsService.gwtSwspId( gynName );
     }
 
-    @Get(':gynName/gymName')
+    @Get(':gynName/gymName/:prefix?')
     async gwtName( @Param('gynName')gynName : string ){   
         return this.optionsService.gwtName( gynName );
     }
 
-    @Get(':gynName/gymImg')
+    @Get(':gynName/gymImg/:prefix?')
     async gwtImg( @Param('gynName')gynName : string ){         
         return this.optionsService.gwtImg( gynName );
     }
 
-    @Get(':gynName/gymFavicon')
+    @Get(':gynName/gymFavicon/:prefix?')
     async gwtFavicon( @Param('gynName')gynName : string ){   
         return this.optionsService.gwtFavicon( gynName );
     }
 
-    @Get(':gynName/modulesShow')
+    @Get(':gynName/modulesShow/:prefix?')
     async gwtmodulesShow( @Param('gynName')gynName : string ){   
         return this.optionsService.gwtmodulesShow( gynName );
     }
@@ -74,7 +105,7 @@ export class OptionsController {
         return this.optionsService.gwtAllGymNames();
     }
 
-    @Get(':gynName/audioFile')
+    @Get(':gynName/audioFile/:prefix?')
     async getAudioFile( @Param('gynName') gynName: string ) {
     return await this.optionsService.getAudioFile(gynName);
     //  //const audioFile = await this.optionsService.getAudioFile(gynName);
@@ -114,7 +145,7 @@ export class OptionsController {
     }
 
     @Put(':gynName/gymImg')
-    async updateGymImg( @Param('gynName')gynName : string, @Body(new ValidationPipe()) img : string ){   
+    async updateGymImg( @Param('gynName')gynName : string, @Body(new ValidationPipe()) img : any ){
         return this.optionsService.updateGymImg( img, gynName );
     }
 

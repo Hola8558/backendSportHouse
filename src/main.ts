@@ -9,6 +9,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const cors = require('cors')
   app.use(cors())
+  app.enableCors({
+  origin: ['http://localhost:8000', 'http://localhost:4200', 'https://us-central1-gymadminsesions.cloudfunctions.net'], // Lista de dominios
+  credentials: true,
+  allowedHeaders: ['Authorization', 'Content-Type', 'x-api-key'],
+  exposedHeaders: ['Authorization']
+});
   app.use(express.json({ limit: '50mb' })); // Configura el límite del cuerpo JSON
   //app.use(express.static('tmp'))
   //app.use("/lead",routes)

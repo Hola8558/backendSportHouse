@@ -1,19 +1,19 @@
-import { Module, NestModule } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+
+import { env } from 'process';
+import config  from './config';
+import * as Joi from 'joi';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { ClientesModule } from './clientes/clientes.module';
 import { RutinasModule } from './rutinas/rutinas.module';
-import { env } from 'process';
-import { ConfigModule } from '@nestjs/config';
 import { enviroments } from './enviroments';
-import config  from './config';
-import * as Joi from 'joi';
 import { OptionsModule } from './options/options.module';
 import { WspModule } from './wsp/wsp.module';
-import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
-import { AuthMiddleware } from './auth-middleware.guard';
 import { PayProccessModule } from './payments/payProccess.module';
 
 @Module({
@@ -34,7 +34,7 @@ import { PayProccessModule } from './payments/payProccess.module';
     RutinasModule,
     OptionsModule,
     PayProccessModule,
-    WspModule
+    WspModule,
   ],
   controllers: [AppController],
   providers: [AppService],
