@@ -17,15 +17,15 @@ export class GymTasksSubscriber implements OnModuleInit {
   private pubsub = new PubSub();
 
   constructor( private userService: UsuariosService,private optionsService: OptionsService ) {
-    const credentialsPath = path.resolve(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-    const credentialsContent = fs.readFileSync(credentialsPath, 'utf8');
-    const credentials = JSON.parse(credentialsContent);
+    //const credentialsPath = path.resolve(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    //const credentialsContent = fs.readFileSync(credentialsPath, 'utf8');
+    //const credentials = JSON.parse(credentialsContent);
     
     this.pubsub = new PubSub({
       projectId: process.env.GOOGLE_CLOUD_PROJECT,
       credentials: {
-          client_email: credentials.client_email,
-          private_key:  credentials.private_key
+          client_email: process.env.CLIENT_EMAIL,//credentials.client_email,
+          private_key:  process.env.PRIVATE_KEY//credentials.private_key
         }
     });
   }
