@@ -3,7 +3,7 @@
 /node_modules
 .env
 .stage.env
-.client_credential.json
+client_credential.json
 /.wwebjs_auth
 
 
