@@ -14,20 +14,14 @@ interface taksInterface {
 
 @Injectable()
 export class GymTasksSubscriber implements OnModuleInit {
-  private pubsub = new PubSub();
+  private pubsub: PubSub;
 
   constructor( private userService: UsuariosService,private optionsService: OptionsService ) {
-    //const credentialsPath = path.resolve(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-    //const credentialsContent = fs.readFileSync(credentialsPath, 'utf8');
-    //const credentials = JSON.parse(credentialsContent);
-    
-    this.pubsub = new PubSub({
-      projectId: process.env.GOOGLE_CLOUD_PROJECT,
-      credentials: {
-          client_email: process.env.CLIENT_EMAIL,//credentials.client_email,
-          private_key:  process.env.PRIVATE_KEY//credentials.private_key
-        }
-    });
+    const credentialsPath = path.resolve(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    const credentialsContent = fs.readFileSync(credentialsPath, 'utf8');
+    const credentials = JSON.parse(credentialsContent);
+    const projectId = credentials.project_id;
+    this.pubsub = new PubSub({ projectId, credentials,  });
   }
 
   async onModuleInit() {

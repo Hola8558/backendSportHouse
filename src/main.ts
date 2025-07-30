@@ -10,7 +10,7 @@ async function bootstrap() {
   const cors = require('cors')
   app.use(cors())
   app.enableCors({
-  origin: ['http://localhost:8000', 'http://localhost:4200', 'https://us-central1-gymadminsesions.cloudfunctions.net'], // Lista de dominios
+  origin: ['http://localhost:8000', 'https://technolo-g.mx/gymAdmin/'], //'http://localhost:4200', 'https://us-central1-gymadminsesions.cloudfunctions.net'], // Lista de dominios
   credentials: true,
   allowedHeaders: ['Authorization', 'Content-Type', 'x-api-key'],
   exposedHeaders: ['Authorization']
